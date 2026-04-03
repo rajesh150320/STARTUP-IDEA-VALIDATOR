@@ -2059,6 +2059,22 @@ body.modal-open {
   .hero-actions {
     width: 100%;
     justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .user-chip {
+    max-width: calc(100% - 64px);
+    word-break: break-word;
+  }
+
+  .account-menu-wrap {
+    margin-left: auto;
+  }
+
+  .account-menu {
+    right: 0;
+    left: auto;
+    min-width: min(220px, calc(100vw - 56px));
   }
 
   .auth-form {
