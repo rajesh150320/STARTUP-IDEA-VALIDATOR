@@ -2072,9 +2072,12 @@ body.modal-open {
   }
 
   .account-menu {
-    right: 0;
+    position: static;
+    margin-top: 10px;
+    right: auto;
     left: auto;
     min-width: min(220px, calc(100vw - 56px));
+    width: min(220px, calc(100vw - 56px));
   }
 
   .auth-form {
