@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 import { sendOTP, verifyOTP } from '../services/otp.service.js';
 import { User } from '../models/user.model.js';
@@ -14,6 +15,12 @@ const getJwtSecret = () => {
   }
 
   return process.env.JWT_SECRET;
+};
+
+const ensureDatabaseReady = () => {
+  if (mongoose.connection.readyState !== 1) {
+    throw new ApiError(503, 'MongoDB is not connected. Please check MONGODB_URI and restart the server.');
+  }
 };
 
 const signToken = (userId) =>
@@ -69,6 +76,8 @@ const decodeOtpPayloadToken = (token, expectedPurpose, email) => {
 };
 
 const requestRegisterOtp = asyncHandler(async (req, res) => {
+  ensureDatabaseReady();
+
   const { firstName, lastName, email, password } = req.body;
   const normalizedEmail = String(email).trim().toLowerCase();
   const existingUser = await User.findOne({ email: normalizedEmail });
@@ -105,6 +114,7 @@ const requestRegisterOtp = asyncHandler(async (req, res) => {
 
 const verifyRegisterOtp = asyncHandler(async (req, res) => {
   getJwtSecret();
+  ensureDatabaseReady();
 
   const { email, otp, verificationToken } = req.body;
   const normalizedEmail = String(email).trim().toLowerCase();
@@ -141,6 +151,8 @@ const verifyRegisterOtp = asyncHandler(async (req, res) => {
 });
 
 const sendAuthOtp = asyncHandler(async (req, res) => {
+  ensureDatabaseReady();
+
   const { email } = req.body;
   const normalizedEmail = String(email).trim().toLowerCase();
 
@@ -172,6 +184,7 @@ const sendAuthOtp = asyncHandler(async (req, res) => {
 
 const verifyAuthOtp = asyncHandler(async (req, res) => {
   getJwtSecret();
+  ensureDatabaseReady();
 
   const { email, otp, verificationToken } = req.body;
   const normalizedEmail = String(email).trim().toLowerCase();
@@ -202,6 +215,7 @@ const verifyAuthOtp = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   getJwtSecret();
+  ensureDatabaseReady();
 
   const { email, password } = req.body;
   const normalizedEmail = String(email).trim().toLowerCase();
