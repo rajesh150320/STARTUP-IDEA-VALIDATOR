@@ -154,7 +154,7 @@ export default function App() {
               <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">
                 Live backend
               </div>
-              <div className="font-medium text-white">POST `http://localhost:8000/api/v1/validator/analyze`</div>
+              <div className="font-medium text-white">POST `http://startup-idea-validator-hzr1.onrender.com/api/v1/validator/analyze`</div>
               <div>{savedAnalyses.length} saved analyses in dashboard memory</div>
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
