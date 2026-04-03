@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Startup Idea Validator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <section class="hero-panel">
+        <div class="hero-top">
+          <div class="hero-badge">Idea Research Workspace</div>
+          <div class="hero-actions">
+            <button id="auth-open-button" class="secondary-button" type="button">Login / Register</button>
+            <span id="user-chip" class="user-chip hidden"></span>
+            <div id="account-menu-wrap" class="account-menu-wrap hidden">
+              <button id="account-menu-button" class="menu-button" type="button" aria-label="Account menu">&#8942;</button>
+              <div id="account-menu" class="account-menu hidden">
+                <button id="menu-dashboard-button" class="account-menu-item" type="button">Dashboard</button>
+                <button id="menu-history-button" class="account-menu-item" type="button">History</button>
+                <button id="menu-logout-button" class="account-menu-item" type="button">Logout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h1>Validate your startup idea before you burn time and money.</h1>
+        <p class="hero-copy">
+          Enter your idea, audience, budget, and launch plan. The app returns a quick
+          structured analysis with market demand, competition, feasibility, suggestions, and
+          an overall score.
+        </p>
+        <div class="hero-highlights">
+          <div class="hero-highlight">
+            <span class="hero-highlight-label">Built for</span>
+            <strong>Founder decision-making</strong>
+            <p>Turn rough ideas into crisp market, MVP, and risk signals before you build.</p>
+          </div>
+          <div class="hero-highlight">
+            <span class="hero-highlight-label">Signals</span>
+            <strong>Demand, competition, feasibility</strong>
+            <p>See whether the opportunity is strong, crowded, or still too vague to ship.</p>
+          </div>
+          <div class="hero-highlight">
+            <span class="hero-highlight-label">Best use</span>
+            <strong>Interview and investor prep</strong>
+            <p>Bring clearer thinking into demos, founder interviews, and MVP planning.</p>
+          </div>
+        </div>
+        <div id="auth-panel" class="auth-panel hidden">
+          <div class="auth-panel-head">
+            <strong id="auth-title">Sign in to save your analysis history</strong>
+            <p id="auth-copy" class="auth-copy">
+              Login or create an account to keep idea history private to your profile.
+            </p>
+          </div>
+          <div class="auth-mode-toggle">
+            <button id="login-mode-button" class="auth-mode-button auth-mode-button-active" type="button">Login</button>
+            <button id="register-mode-button" class="auth-mode-button" type="button">Register</button>
+          </div>
+          <div class="auth-contact-toggle">
+            <button id="contact-email-button" class="auth-mode-button auth-mode-button-active" type="button">Email Only</button>
+            <button id="contact-phone-button" class="auth-mode-button hidden" type="button">Use Phone Number</button>
+          </div>
+          <form id="auth-form" class="auth-form" novalidate>
+            <label id="auth-first-name-field" class="field hidden">
+              <span>First Name</span>
+              <input id="auth-first-name" type="text" placeholder="Rajesh" />
+            </label>
+            <label id="auth-last-name-field" class="field hidden">
+              <span>Last Name</span>
+              <input id="auth-last-name" type="text" placeholder="Kumar" />
+            </label>
+            <label id="auth-email-field" class="field">
+              <span>Email</span>
+              <input id="auth-email" type="email" placeholder="you@example.com" />
+            </label>
+            <label id="auth-phone-field" class="field hidden">
+              <span>Phone Number</span>
+              <input id="auth-phone" type="tel" placeholder="+91 9876543210" />
+            </label>
+            <label class="field">
+              <span id="auth-password-label">Password</span>
+              <input id="auth-password" type="password" placeholder="At least 6 characters" required />
+            </label>
+            <label id="auth-confirm-password-field" class="field hidden">
+              <span>Confirm Password</span>
+              <input id="auth-confirm-password" type="password" placeholder="Re-enter your password" />
+            </label>
+            <p id="auth-helper-note" class="auth-helper-note">
+              Use at least 6 characters. Your analysis history will stay private to your account.
+            </p>
+            <p id="auth-inline-status" class="auth-inline-status"></p>
+            <div class="auth-actions">
+              <button id="auth-submit-button" class="submit-button auth-submit-button" type="submit">Login</button>
+              <button id="guest-mode-button" class="secondary-button guest-mode-button" type="button">Continue as Guest</button>
+            </div>
+          </form>
+          <div id="otp-panel" class="otp-panel hidden">
+            <div class="auth-panel-head">
+              <strong id="otp-title">Verify OTP</strong>
+              <p id="otp-copy" class="auth-copy">
+                Enter the OTP sent to your email to finish creating your account.
+              </p>
+            </div>
+            <label class="field">
+              <span>One-Time Password</span>
+              <input id="otp-input" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit OTP" />
+            </label>
+            <p id="otp-helper-note" class="auth-helper-note">
+              Check your inbox for the 6-digit OTP.
+            </p>
+            <div class="otp-actions">
+              <button id="otp-back-button" class="secondary-button" type="button">Edit Details</button>
+              <button id="otp-submit-button" class="submit-button auth-submit-button" type="button">Verify OTP</button>
+            </div>
+          </div>
+        </div>
+        <div class="hero-grid">
+          <div class="hero-card">
+            <span class="hero-card-label">What you get</span>
+            <strong>Instant structured analysis</strong>
+            <p>Clear output you can use for MVP planning, investor prep, or idea filtering.</p>
+          </div>
+          <div class="hero-card">
+            <span class="hero-card-label">Best for</span>
+            <strong>Founders and side-project builders</strong>
+            <p>Useful when comparing multiple ideas or shaping a sharper first version.</p>
+          </div>
+        </div>
+      </section>
+
+      <main class="workspace">
+        <section id="input-panel" class="input-panel">
+          <div class="section-head">
+            <p class="eyebrow">Interview</p>
+            <h2>Founder interview mode</h2>
+            <p class="interview-copy">
+              Answer one question at a time. The interviewer will dig deeper and build your
+              startup profile before generating the final analysis.
+            </p>
+          </div>
+
+          <div id="interview-mode-panel">
+          <div class="progress-strip">
+            <div class="progress-copy">
+              <strong id="progress-title">Question 1</strong>
+              <span id="progress-subtitle">We are just getting started.</span>
+            </div>
+            <div class="progress-track">
+              <span id="progress-fill" class="progress-fill" style="width: 0%"></span>
+            </div>
+          </div>
+
+          <div id="interview-thread" class="interview-thread"></div>
+
+          <form id="interview-form" class="interview-form">
+            <div class="question-card">
+              <span id="question-tag" class="question-tag">Current question</span>
+              <h3 id="question-title">What is your startup idea?</h3>
+              <p id="question-helper" class="question-helper">
+                Describe it in one crisp sentence so we can sharpen it from there.
+              </p>
+
+              <div id="quick-replies" class="quick-replies"></div>
+
+              <div class="location-input-wrap">
+                <input
+                  id="answer-input"
+                  class="answer-input"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="Type your answer here"
+                />
+                <div id="location-suggestions" class="location-suggestions hidden"></div>
+              </div>
+
+              <textarea
+                id="answer-textarea"
+                class="answer-textarea hidden"
+                rows="5"
+                placeholder="Type your answer here"
+              ></textarea>
+
+              <select id="answer-select" class="answer-select hidden"></select>
+            </div>
+
+            <div class="interview-actions">
+              <button id="back-button" class="secondary-button" type="button">Back</button>
+              <button id="next-button" class="submit-button" type="submit">Next question</button>
+            </div>
+          </form>
+          </div>
+
+          <form id="compare-form" class="compare-form hidden">
+            <section class="compare-card">
+              <div class="compare-card-head">
+                <span class="compare-badge compare-badge-alt">Other Idea</span>
+                <h3>Enter the second startup idea</h3>
+                <p class="question-helper">
+                  We already have the first idea. Add the other one and we will compare both side by side.
+                </p>
+              </div>
+              <label class="field">
+                <span>Idea</span>
+                <input type="text" name="ideaB" placeholder="Hyperlocal healthy lunch subscription" required />
+              </label>
+              <label class="field">
+                <span>Location</span>
+                <input type="text" name="locationB" placeholder="Mumbai, Maharashtra" required />
+              </label>
+              <label class="field">
+                <span>Target Audience</span>
+                <input type="text" name="targetAudienceB" placeholder="Office workers looking for daily healthy meals" required />
+              </label>
+              <label class="field">
+                <span>Budget Category</span>
+                <select name="budgetCategoryB" required>
+                  <option value="">Select budget range</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Minimum Budget (INR)</span>
+                <input type="number" name="minB" min="0" placeholder="50000" required />
+              </label>
+              <label class="field">
+                <span>Maximum Budget (INR)</span>
+                <input type="number" name="maxB" min="0" placeholder="200000" required />
+              </label>
+              <label class="field">
+                <span>Timeline</span>
+                <input type="text" name="timelineB" placeholder="3 months" required />
+              </label>
+              <label class="field">
+                <span>Platform</span>
+                <input type="text" name="platformB" placeholder="App + dashboard" required />
+              </label>
+              <label class="field">
+                <span>Problem</span>
+                <textarea name="problemB" rows="5" placeholder="Users struggle to find affordable healthy meals they can trust every day." required></textarea>
+              </label>
+            </section>
+
+            <div class="interview-actions">
+              <button id="cancel-compare-button" class="secondary-button" type="button">Cancel</button>
+              <button id="compare-submit-button" class="submit-button" type="submit">
+                Compare Both Ideas
+              </button>
+            </div>
+          </form>
+
+          <section id="idea-summary-panel" class="idea-summary-panel hidden">
+            <div class="compare-card">
+              <div class="compare-card-head">
+                <span class="compare-badge">Current Idea</span>
+                <h3 id="idea-summary-title">Startup idea snapshot</h3>
+                <p id="idea-summary-copy" class="question-helper">
+                  Your completed interview summary will appear here.
+                </p>
+              </div>
+                <div class="summary-grid">
+                  <div class="summary-item">
+                  <span>Location</span>
+                  <strong id="idea-summary-location">-</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Audience</span>
+                  <strong id="idea-summary-audience">-</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Budget</span>
+                  <strong id="idea-summary-budget">-</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Timeline</span>
+                  <strong id="idea-summary-timeline">-</strong>
+                </div>
+              </div>
+              <div class="summary-actions">
+                <button id="edit-idea-button" class="secondary-button" type="button">Edit Answers</button>
+                <button id="summary-compare-button" class="copy-button" type="button">Compare With Another Idea</button>
+              </div>
+            </div>
+
+          <form id="validator-form" class="idea-form hidden" aria-hidden="true">
+            <label class="field field-full">
+              <span>Idea</span>
+              <input type="text" name="idea" placeholder="AI-powered local delivery planner" required />
+            </label>
+
+            <label class="field location-field field-full">
+              <span>Location</span>
+              <div class="location-input-wrap">
+                <input
+                  id="legacy-location-input"
+                  type="text"
+                  name="location"
+                  placeholder="Bengaluru"
+                  autocomplete="off"
+                  required
+                />
+                <div class="location-suggestions hidden"></div>
+              </div>
+            </label>
+
+            <label class="field">
+              <span>Target Audience</span>
+              <input type="text" name="targetAudience" placeholder="Busy working professionals" required />
+            </label>
+
+            <label class="field">
+              <span>Budget Category</span>
+              <select name="budgetCategory" required>
+                <option value="">Select budget range</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Minimum Budget (₹)</span>
+              <input type="number" name="min" min="0" placeholder="50000" required />
+            </label>
+
+            <label class="field">
+              <span>Maximum Budget (₹)</span>
+              <input type="number" name="max" min="0" placeholder="200000" required />
+            </label>
+
+            <label class="field">
+              <span>Timeline</span>
+              <input type="text" name="timeline" placeholder="3 months" required />
+            </label>
+
+            <label class="field">
+              <span>Platform</span>
+              <input type="text" name="platform" placeholder="Web + Mobile" required />
+            </label>
+
+            <label class="field field-full">
+              <span>Problem</span>
+              <textarea
+                name="problem"
+                rows="5"
+                placeholder="People struggle to compare reliable local services quickly and end up wasting time."
+                required
+              ></textarea>
+            </label>
+
+            <button class="submit-button" type="submit">Analyze Idea</button>
+          </form>
+          </section>
+        </section>
+
+        <section class="output-panel">
+          <div class="section-head">
+            <p class="eyebrow">Output</p>
+            <h2 id="output-title">Idea analysis</h2>
+            <p class="section-subcopy">A cleaner product-grade snapshot of score, trends, market position, and what to build first.</p>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <div class="empty-orb"></div>
+            <p>Your analysis will appear here once you submit the form.</p>
+          </div>
+
+          <div id="result-panel" class="result-panel hidden">
+            <div class="score-block">
+              <div class="score-main">
+                <span id="analysis-source" class="analysis-chip">Local analysis engine</span>
+                <span class="score-label">Startup Score</span>
+                <div class="score-shell">
+                  <div id="score-gauge" class="score-gauge" style="--score-angle: 0deg">
+                    <div class="score-gauge-inner">
+                      <strong id="score">0</strong>
+                      <span>/10</span>
+                    </div>
+                  </div>
+                  <div class="score-copy">
+                    <strong id="score-verdict" class="score-verdict">Needs Improvement</strong>
+                    <p>
+                      Fast visual snapshot of idea strength across demand, competition, and
+                      feasibility.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="score-actions">
+                <div class="share-wrap">
+                  <button id="copy-json-button" class="copy-button" type="button">Export Data</button>
+                  <div id="share-panel" class="share-panel hidden">
+                    <button id="share-copy-summary" class="share-option" type="button">Copy Summary</button>
+                    <button id="share-copy-json" class="share-option" type="button">Copy JSON</button>
+                    <button id="share-whatsapp" class="share-option" type="button">WhatsApp</button>
+                    <button id="share-x" class="share-option" type="button">X / Twitter</button>
+                    <button id="share-linkedin" class="share-option" type="button">LinkedIn</button>
+                    <button id="share-instagram" class="share-option" type="button">Instagram</button>
+                    <button id="share-native" class="share-option" type="button">More Options</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analysis-chart-grid">
+              <div class="result-card chart-card chart-card-wide">
+                <h3>Score Over Time</h3>
+                <div id="analysis-score-chart-wrap" class="dashboard-chart-wrap">
+                  <canvas id="analysisScoreChart"></canvas>
+                </div>
+                <p id="analysis-score-chart-empty" class="dashboard-empty-note hidden">Run analysis to see trends</p>
+              </div>
+
+              <div class="result-card chart-card">
+                <h3>Idea Metrics</h3>
+                <div id="analysis-metrics-chart-wrap" class="dashboard-chart-wrap">
+                  <canvas id="analysisMetricsChart"></canvas>
+                </div>
+                <p id="analysis-metrics-chart-empty" class="dashboard-empty-note hidden">Run analysis to see trends</p>
+              </div>
+            </div>
+
+            <div class="metrics-grid">
+              <article class="metric-card demand">
+                <div class="metric-head">
+                  <h3>Market Demand</h3>
+                  <strong id="marketDemandScore">0.0</strong>
+                </div>
+                <div class="metric-bar"><span id="marketDemandBar"></span></div>
+                <p id="marketDemandWhy" class="metric-why">Why this score will appear here.</p>
+              </article>
+
+              <article class="metric-card competition">
+                <div class="metric-head">
+                  <h3>Competition</h3>
+                  <strong id="competitionScore">0.0</strong>
+                </div>
+                <div class="metric-bar"><span id="competitionBar"></span></div>
+                <p id="competitionWhy" class="metric-why">Why this score will appear here.</p>
+              </article>
+
+              <article class="metric-card feasibility">
+                <div class="metric-head">
+                  <h3>Feasibility</h3>
+                  <strong id="feasibilityScore">0.0</strong>
+                </div>
+                <div class="metric-bar"><span id="feasibilityBar"></span></div>
+                <p id="feasibilityWhy" class="metric-why">Why this score will appear here.</p>
+              </article>
+            </div>
+
+            <div class="result-card">
+              <h3>Market Demand</h3>
+              <p id="marketDemand"></p>
+            </div>
+
+            <div class="result-card">
+              <h3>Market Signals</h3>
+              <p id="marketSignalsSummary"></p>
+              <p id="marketSignalsMeta" class="result-meta"></p>
+            </div>
+
+            <div class="result-card">
+              <h3>Competition</h3>
+              <p id="competition"></p>
+            </div>
+
+            <div class="result-card">
+              <p class="section-kicker">Where you stand in the market</p>
+              <h3>Competitor Insights</h3>
+              <div class="competitor-insights-head">
+                <span class="result-meta">Market Saturation</span>
+                <span id="competitorSaturation" class="analysis-chip">Moderate</span>
+              </div>
+              <div id="competitorList" class="competitor-list"></div>
+              <p id="competitorGap" class="result-meta"></p>
+            </div>
+
+            <div class="result-card">
+              <h3>Feasibility</h3>
+              <p id="feasibility"></p>
+            </div>
+
+            <div class="result-card">
+              <h3>Suggestions</h3>
+              <ul id="suggestions" class="suggestion-list"></ul>
+            </div>
+
+            <div class="result-card">
+              <h3>Suggested MVP</h3>
+              <ul id="mvpSuggestions" class="suggestion-list"></ul>
+            </div>
+
+            <div class="result-card roast-card">
+              <h3>Brutal Reality Check</h3>
+              <p id="roast"></p>
+            </div>
+          </div>
+
+          <div id="comparison-panel" class="comparison-panel hidden">
+            <div class="comparison-hero">
+              <div>
+                <span id="comparison-winner-badge" class="analysis-chip">Comparison ready</span>
+                <h3 id="comparison-headline">Idea comparison snapshot</h3>
+                <p id="comparison-summary" class="comparison-summary"></p>
+              </div>
+            </div>
+
+            <div class="comparison-columns">
+              <article class="comparison-column">
+                <div class="comparison-column-head">
+                  <span class="compare-badge">Idea A</span>
+                  <strong id="compare-idea-a-name">Idea A</strong>
+                </div>
+                <div class="comparison-score-row">
+                  <span>Overall score</span>
+                  <strong id="compare-score-a">0.0</strong>
+                </div>
+                <div class="comparison-metric-row">
+                  <span>Market Demand</span>
+                  <strong id="compare-demand-a">0.0</strong>
+                </div>
+                <div class="comparison-metric-row">
+                  <span>Competition</span>
+                  <strong id="compare-competition-a">0.0</strong>
+                </div>
+                <div class="comparison-metric-row">
+                  <span>Feasibility</span>
+                  <strong id="compare-feasibility-a">0.0</strong>
+                </div>
+                <p id="compare-note-a" class="comparison-note"></p>
+              </article>
+
+              <article class="comparison-column">
+                <div class="comparison-column-head">
+                  <span class="compare-badge compare-badge-alt">Idea B</span>
+                  <strong id="compare-idea-b-name">Idea B</strong>
+                </div>
+                <div class="comparison-score-row">
+                  <span>Overall score</span>
+                  <strong id="compare-score-b">0.0</strong>
+                </div>
+                <div class="comparison-metric-row">
+                  <span>Market Demand</span>
+                  <strong id="compare-demand-b">0.0</strong>
+                </div>
+                <div class="comparison-metric-row">
+                  <span>Competition</span>
+                  <strong id="compare-competition-b">0.0</strong>
+                </div>
+                <div class="comparison-metric-row">
+                  <span>Feasibility</span>
+                  <strong id="compare-feasibility-b">0.0</strong>
+                </div>
+                <p id="compare-note-b" class="comparison-note"></p>
+              </article>
+            </div>
+
+            <div class="comparison-grid">
+              <article class="result-card">
+                <h3>Best For Speed</h3>
+                <p id="compare-speed"></p>
+              </article>
+              <article class="result-card">
+                <h3>Best For Market Pull</h3>
+                <p id="compare-demand"></p>
+              </article>
+              <article class="result-card">
+                <h3>Best Overall Bet</h3>
+                <p id="compare-overall"></p>
+              </article>
+              <article class="result-card">
+                <h3>Decision Advice</h3>
+                <ul id="compare-recommendations" class="suggestion-list"></ul>
+              </article>
+            </div>
+          </div>
+
+          <p id="status-message" class="status-message"></p>
+        </section>
+      </main>
+    </div>
+
+    <div id="history-modal" class="history-modal hidden">
+      <div class="history-backdrop"></div>
+      <section class="history-dialog">
+        <div class="history-dialog-head">
+          <div>
+            <span class="compare-badge">History</span>
+            <h3>Your startup analysis history</h3>
+            <p id="history-trend-copy" class="question-helper">
+              Recent analysis trend will appear here.
+            </p>
+          </div>
+          <button id="history-close-button" class="secondary-button" type="button">Close</button>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span>Total analyses</span>
+            <strong id="history-total">0</strong>
+          </div>
+          <div class="summary-item">
+            <span>Score change</span>
+            <strong id="history-change">0.0</strong>
+          </div>
+        </div>
+        <div id="evolution-panel" class="evolution-panel hidden">
+          <div class="evolution-head">
+            <span class="compare-badge">Idea Evolution</span>
+            <strong id="evolution-title">Improvement tracking</strong>
+          </div>
+          <p id="evolution-copy" class="question-helper">
+            Re-analyze the same idea after improving it to unlock version tracking.
+          </p>
+          <div class="evolution-score-row">
+            <div class="evolution-score-chip">
+              <span>Previous</span>
+              <strong id="evolution-from">0.0</strong>
+            </div>
+            <div class="evolution-arrow">-></div>
+            <div class="evolution-score-chip evolution-score-chip-highlight">
+              <span>Latest</span>
+              <strong id="evolution-to">0.0</strong>
+            </div>
+          </div>
+        </div>
+        <div id="history-list" class="history-list">
+          <p class="history-empty">Run a few analyses to build your dashboard history.</p>
+        </div>
+      </section>
+    </div>
+
+    <div id="dashboard-modal" class="history-modal hidden">
+      <div class="history-backdrop"></div>
+      <section class="history-dialog dashboard-dialog">
+        <div class="history-dialog-head">
+          <div>
+            <span class="compare-badge">Dashboard</span>
+            <h3>Your startup dashboard</h3>
+            <p id="dashboard-copy" class="question-helper">
+              Track your best ideas, recent analyses, and score improvement over time.
+            </p>
+          </div>
+          <button id="dashboard-close-button" class="secondary-button" type="button">Close</button>
+        </div>
+
+        <div id="dashboard-loading" class="dashboard-state hidden">
+          <div class="empty-orb"></div>
+          <p>Loading your startup dashboard...</p>
+        </div>
+
+        <div id="dashboard-empty" class="dashboard-state hidden">
+          <div class="empty-orb"></div>
+          <p>No saved ideas yet. Run your first analysis after logging in to build your dashboard.</p>
+        </div>
+
+        <div id="dashboard-content" class="dashboard-content hidden">
+          <div class="dashboard-stats">
+            <article class="summary-item dashboard-stat-card">
+              <span>Total Ideas</span>
+              <strong id="dashboard-total-ideas">0</strong>
+            </article>
+            <article class="summary-item dashboard-stat-card">
+              <span>Best Score</span>
+              <strong id="dashboard-best-score">0.0</strong>
+            </article>
+            <article class="summary-item dashboard-stat-card">
+              <span>Average Score</span>
+              <strong id="dashboard-average-score">0.0</strong>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="result-card dashboard-card dashboard-card-wide">
+              <h3>Score Over Time</h3>
+              <div id="dashboard-score-chart-wrap" class="dashboard-chart-wrap">
+                <canvas id="scoreChart"></canvas>
+              </div>
+              <p id="dashboard-score-chart-empty" class="dashboard-empty-note hidden">Run analysis to see trends</p>
+            </article>
+
+            <article class="result-card dashboard-card">
+              <h3>Idea Metrics</h3>
+              <div id="dashboard-metrics-chart-wrap" class="dashboard-chart-wrap">
+                <canvas id="metricsChart"></canvas>
+              </div>
+              <p id="dashboard-metrics-chart-empty" class="dashboard-empty-note hidden">Run analysis to see trends</p>
+            </article>
+
+            <article class="result-card dashboard-card">
+              <h3>Last 5 Ideas</h3>
+              <div id="dashboard-last5-list" class="dashboard-list"></div>
+            </article>
+
+            <article id="dashboard-market-trend-card" class="result-card dashboard-card hidden">
+              <h3>Market Trend</h3>
+              <div id="dashboard-market-trend-chart-wrap" class="dashboard-chart-wrap">
+                <canvas id="dashboard-market-trend-chart"></canvas>
+              </div>
+              <p id="dashboard-market-trend-empty" class="dashboard-empty-note hidden">No data available yet</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
+
