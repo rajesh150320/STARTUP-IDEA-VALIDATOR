@@ -1,7 +1,7 @@
 {
   "name": "startup-idea-validator",
   "version": "1.0.0",
-  "description": "Backend starter for a startup idea validator",
+  "description": "Startup idea validator served as a single Render app with Express frontend + backend",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -26,8 +26,5 @@
   "devDependencies": {
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3"
-  },
-  "workspaces": [
-    "frontend"
-  ]
+  }
 }
