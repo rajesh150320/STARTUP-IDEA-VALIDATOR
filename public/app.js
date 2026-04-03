@@ -73,6 +73,9 @@ const accountMenu = document.getElementById('account-menu');
 const menuDashboardButton = document.getElementById('menu-dashboard-button');
 const menuHistoryButton = document.getElementById('menu-history-button');
 const menuLogoutButton = document.getElementById('menu-logout-button');
+const authModal = document.getElementById('auth-modal');
+const authBackdrop = document.getElementById('auth-backdrop');
+const authCloseButton = document.getElementById('auth-close-button');
 const authPanel = document.getElementById('auth-panel');
 const authTitle = document.getElementById('auth-title');
 const authCopy = document.getElementById('auth-copy');
@@ -588,7 +591,9 @@ const activateGuestMode = async (message = 'Guest mode is active. Your analyses 
 };
 
 const toggleAuthPanel = (show) => {
+  authModal?.classList.toggle('hidden', !show);
   authPanel.classList.toggle('hidden', !show);
+  document.body.classList.toggle('modal-open', show);
 };
 
 const toggleAccountMenu = (show) => {
@@ -2125,6 +2130,9 @@ dashboardBackdrop?.addEventListener('click', () => {
 });
 
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && authModal && !authModal.classList.contains('hidden')) {
+    toggleAuthPanel(false);
+  }
   if (event.key === 'Escape' && historyModal && !historyModal.classList.contains('hidden')) {
     toggleHistoryModal(false);
   }
@@ -2134,12 +2142,21 @@ document.addEventListener('keydown', (event) => {
 });
 
 authOpenButton.addEventListener('click', () => {
-  const isOpen = !authPanel.classList.contains('hidden');
+  const isOpen = authModal ? !authModal.classList.contains('hidden') : !authPanel.classList.contains('hidden');
   toggleAuthPanel(!isOpen);
   toggleAccountMenu(false);
   if (!isOpen) {
     setAuthFormMode('login');
+    authEmail?.focus();
   }
+});
+
+authCloseButton?.addEventListener('click', () => {
+  toggleAuthPanel(false);
+});
+
+authBackdrop?.addEventListener('click', () => {
+  toggleAuthPanel(false);
 });
 
 loginModeButton.addEventListener('click', () => {
