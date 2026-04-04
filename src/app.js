@@ -9,6 +9,9 @@ import validatorRouter from './routes/validator.routes.js';
 import { ApiError } from './utils/ApiError.js';
 
 const app = express();
+const trustProxy = process.env.TRUST_PROXY || '1';
+
+app.set('trust proxy', trustProxy);
 
 app.use(
   cors({

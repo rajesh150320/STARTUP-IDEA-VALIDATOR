@@ -10,20 +10,36 @@ const OTP_MAX_ATTEMPTS = 5;
 const OTP_COOLDOWN_SECONDS = 60;
 const SMTP_TIMEOUT_MS = 15000;
 
+const parseBoolean = (value, fallback) => {
+  if (value === undefined) {
+    return fallback;
+  }
+
+  return String(value).trim().toLowerCase() === 'true';
+};
+
 const getTransporter = () => {
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = Number(process.env.SMTP_PORT || 465);
+  const smtpSecure = parseBoolean(process.env.SMTP_SECURE, smtpPort === 465);
 
   if (!emailUser || !emailPass) {
     throw new ApiError(500, 'EMAIL_USER and EMAIL_PASS must be configured');
   }
 
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpSecure,
     auth: {
       user: emailUser,
       pass: emailPass,
     },
+    connectionTimeout: SMTP_TIMEOUT_MS,
+    greetingTimeout: SMTP_TIMEOUT_MS,
+    socketTimeout: SMTP_TIMEOUT_MS,
   });
 };
 
@@ -119,6 +135,8 @@ const sendOTP = async (email) => {
         error: error?.message,
         code: error?.code,
         response: error?.response,
+        responseCode: error?.responseCode,
+        command: error?.command,
       },
       'OTP email send failed'
     );
@@ -129,7 +147,7 @@ const sendOTP = async (email) => {
 
     throw new ApiError(
       500,
-      'Could not send OTP email. Check EMAIL_USER, EMAIL_PASS, and Gmail App Password setup.'
+      'Could not send OTP email. Check SMTP_HOST, SMTP_PORT, SMTP_SECURE, EMAIL_USER, and EMAIL_PASS.'
     );
   }
 

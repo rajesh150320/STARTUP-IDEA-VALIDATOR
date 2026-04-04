@@ -89,6 +89,9 @@ JWT_SECRET=your_secret
 OPENAI_API_KEY=your_api_key
 EMAIL_USER=your_email
 EMAIL_PASS=your_app_password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
 CORS_ORIGIN=*
 ```
 
