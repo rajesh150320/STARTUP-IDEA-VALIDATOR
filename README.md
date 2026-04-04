@@ -87,6 +87,8 @@ PORT=8000
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_secret
 OPENAI_API_KEY=your_api_key
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=Startup Idea Validator <onboarding@resend.dev>
 EMAIL_USER=your_email
 EMAIL_PASS=your_app_password
 SMTP_HOST=smtp.gmail.com
@@ -94,6 +96,8 @@ SMTP_PORT=465
 SMTP_SECURE=true
 CORS_ORIGIN=*
 ```
+
+For production on Render, prefer `RESEND_API_KEY` and `RESEND_FROM_EMAIL`. SMTP can still be used as a local fallback.
 
 ---
 

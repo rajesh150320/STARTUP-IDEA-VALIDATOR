@@ -9,6 +9,7 @@ const OTP_EXPIRY_MINUTES = 5;
 const OTP_MAX_ATTEMPTS = 5;
 const OTP_COOLDOWN_SECONDS = 60;
 const SMTP_TIMEOUT_MS = 15000;
+const RESEND_API_URL = 'https://api.resend.com/emails';
 
 const parseBoolean = (value, fallback) => {
   if (value === undefined) {
@@ -47,6 +48,78 @@ const generateOTP = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const normalizeEmail = (email = '') => String(email).trim().toLowerCase();
 
+const buildOtpEmailHtml = (otpValue) => `
+  <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #16324a;">
+    <h2 style="margin: 0 0 12px;">Verify your email</h2>
+    <p style="margin: 0 0 18px; line-height: 1.6;">
+      Use the OTP below to continue with Startup Idea Validator. It expires in ${OTP_EXPIRY_MINUTES} minutes.
+    </p>
+    <div style="margin: 18px 0; padding: 18px 20px; border-radius: 16px; background: #eef7ff; border: 1px solid #cce5ff; text-align: center;">
+      <span style="display: inline-block; font-size: 30px; font-weight: 700; letter-spacing: 8px; color: #155a8f;">
+        ${otpValue}
+      </span>
+    </div>
+    <p style="margin: 18px 0 0; color: #627d93; line-height: 1.6;">
+      If you did not request this OTP, you can safely ignore this email.
+    </p>
+  </div>
+`;
+
+const sendWithResend = async ({ to, subject, html }) => {
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const resendFromEmail = process.env.RESEND_FROM_EMAIL;
+
+  if (!resendApiKey || !resendFromEmail) {
+    return false;
+  }
+
+  const response = await withTimeout(
+    fetch(RESEND_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: resendFromEmail,
+        to: [to],
+        subject,
+        html,
+      }),
+    }),
+    SMTP_TIMEOUT_MS,
+    'Email delivery timed out. Check Resend configuration and try again.'
+  );
+
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new ApiError(
+      response.status || 502,
+      payload?.message || payload?.error || 'Could not send OTP email through Resend.'
+    );
+  }
+
+  return true;
+};
+
+const sendWithSmtp = async ({ to, subject, html }) => {
+  const transporter = getTransporter();
+
+  await withTimeout(
+    transporter.sendMail({
+      from: `"Startup Idea Validator" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    }),
+    SMTP_TIMEOUT_MS,
+    'Email delivery timed out. Check Gmail SMTP credentials and try again.'
+  );
+
+  return true;
+};
+
 const withTimeout = async (promise, timeoutMs, errorMessage) => {
   let timer;
 
@@ -83,6 +156,8 @@ const sendOTP = async (email) => {
   const otpHash = await bcrypt.hash(otpValue, 10);
   const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
   const resendAvailableAt = new Date(Date.now() + OTP_COOLDOWN_SECONDS * 1000);
+  const subject = 'Your Startup Idea Validator OTP';
+  const html = buildOtpEmailHtml(otpValue);
 
   await Otp.findOneAndUpdate(
     { email: normalizedEmail },
@@ -100,34 +175,20 @@ const sendOTP = async (email) => {
     }
   );
 
-  const transporter = getTransporter();
-
   try {
-    await withTimeout(
-      transporter.sendMail({
-        from: `"Startup Idea Validator" <${process.env.EMAIL_USER}>`,
+    const sentWithResend = await sendWithResend({
+      to: normalizedEmail,
+      subject,
+      html,
+    });
+
+    if (!sentWithResend) {
+      await sendWithSmtp({
         to: normalizedEmail,
-        subject: 'Your Startup Idea Validator OTP',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #16324a;">
-            <h2 style="margin: 0 0 12px;">Verify your email</h2>
-            <p style="margin: 0 0 18px; line-height: 1.6;">
-              Use the OTP below to continue with Startup Idea Validator. It expires in ${OTP_EXPIRY_MINUTES} minutes.
-            </p>
-            <div style="margin: 18px 0; padding: 18px 20px; border-radius: 16px; background: #eef7ff; border: 1px solid #cce5ff; text-align: center;">
-              <span style="display: inline-block; font-size: 30px; font-weight: 700; letter-spacing: 8px; color: #155a8f;">
-                ${otpValue}
-              </span>
-            </div>
-            <p style="margin: 18px 0 0; color: #627d93; line-height: 1.6;">
-              If you did not request this OTP, you can safely ignore this email.
-            </p>
-          </div>
-        `,
-      }),
-      SMTP_TIMEOUT_MS,
-      'Email delivery timed out. Check Gmail SMTP credentials and try again.'
-    );
+        subject,
+        html,
+      });
+    }
   } catch (error) {
     logger.error(
       {
@@ -147,11 +208,17 @@ const sendOTP = async (email) => {
 
     throw new ApiError(
       500,
-      'Could not send OTP email. Check SMTP_HOST, SMTP_PORT, SMTP_SECURE, EMAIL_USER, and EMAIL_PASS.'
+      'Could not send OTP email. Check Resend or SMTP email configuration.'
     );
   }
 
-  logger.info({ email: normalizedEmail }, 'OTP email sent');
+  logger.info(
+    {
+      email: normalizedEmail,
+      provider: process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL ? 'resend' : 'smtp',
+    },
+    'OTP email sent'
+  );
 
   return {
     email: normalizedEmail,
