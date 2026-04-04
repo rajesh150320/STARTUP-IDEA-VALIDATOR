@@ -8,6 +8,7 @@ import { logger } from '../utils/logger.js';
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_MAX_ATTEMPTS = 5;
 const OTP_COOLDOWN_SECONDS = 60;
+const SMTP_TIMEOUT_MS = 15000;
 
 const getTransporter = () => {
   const emailUser = process.env.EMAIL_USER;
@@ -18,7 +19,12 @@ const getTransporter = () => {
   }
 
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    connectionTimeout: SMTP_TIMEOUT_MS,
+    greetingTimeout: SMTP_TIMEOUT_MS,
+    socketTimeout: SMTP_TIMEOUT_MS,
     auth: {
       user: emailUser,
       pass: emailPass,
@@ -29,6 +35,21 @@ const getTransporter = () => {
 const generateOTP = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const normalizeEmail = (email = '') => String(email).trim().toLowerCase();
+
+const withTimeout = async (promise, timeoutMs, errorMessage) => {
+  let timer;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new ApiError(504, errorMessage)), timeoutMs);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+};
 
 const sendOTP = async (email) => {
   const normalizedEmail = normalizeEmail(email);
@@ -70,27 +91,52 @@ const sendOTP = async (email) => {
 
   const transporter = getTransporter();
 
-  await transporter.sendMail({
-    from: `"Startup Idea Validator" <${process.env.EMAIL_USER}>`,
-    to: normalizedEmail,
-    subject: 'Your Startup Idea Validator OTP',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #16324a;">
-        <h2 style="margin: 0 0 12px;">Verify your email</h2>
-        <p style="margin: 0 0 18px; line-height: 1.6;">
-          Use the OTP below to continue with Startup Idea Validator. It expires in ${OTP_EXPIRY_MINUTES} minutes.
-        </p>
-        <div style="margin: 18px 0; padding: 18px 20px; border-radius: 16px; background: #eef7ff; border: 1px solid #cce5ff; text-align: center;">
-          <span style="display: inline-block; font-size: 30px; font-weight: 700; letter-spacing: 8px; color: #155a8f;">
-            ${otpValue}
-          </span>
-        </div>
-        <p style="margin: 18px 0 0; color: #627d93; line-height: 1.6;">
-          If you did not request this OTP, you can safely ignore this email.
-        </p>
-      </div>
-    `,
-  });
+  try {
+    await withTimeout(
+      transporter.sendMail({
+        from: `"Startup Idea Validator" <${process.env.EMAIL_USER}>`,
+        to: normalizedEmail,
+        subject: 'Your Startup Idea Validator OTP',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #16324a;">
+            <h2 style="margin: 0 0 12px;">Verify your email</h2>
+            <p style="margin: 0 0 18px; line-height: 1.6;">
+              Use the OTP below to continue with Startup Idea Validator. It expires in ${OTP_EXPIRY_MINUTES} minutes.
+            </p>
+            <div style="margin: 18px 0; padding: 18px 20px; border-radius: 16px; background: #eef7ff; border: 1px solid #cce5ff; text-align: center;">
+              <span style="display: inline-block; font-size: 30px; font-weight: 700; letter-spacing: 8px; color: #155a8f;">
+                ${otpValue}
+              </span>
+            </div>
+            <p style="margin: 18px 0 0; color: #627d93; line-height: 1.6;">
+              If you did not request this OTP, you can safely ignore this email.
+            </p>
+          </div>
+        `,
+      }),
+      SMTP_TIMEOUT_MS,
+      'Email delivery timed out. Check Gmail SMTP credentials and try again.'
+    );
+  } catch (error) {
+    logger.error(
+      {
+        email: normalizedEmail,
+        error: error?.message,
+        code: error?.code,
+        response: error?.response,
+      },
+      'OTP email send failed'
+    );
+
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    throw new ApiError(
+      500,
+      'Could not send OTP email. Check EMAIL_USER, EMAIL_PASS, and Gmail App Password setup.'
+    );
+  }
 
   logger.info({ email: normalizedEmail }, 'OTP email sent');
 
